@@ -1,0 +1,14 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Your watchlist ({{user.username}})</h2>
+    {% if watchlist.product.all %}
+        <ul>
+            {% for prod in watchlist.product.all %}
+                <li><a href="{% url 'listingPage' product=prod.title %}">{{prod.title}}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Empty watchlist</p>
+    {% endif %}
+{% endblock %}

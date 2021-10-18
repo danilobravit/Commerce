@@ -1,0 +1,39 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %} 
+    <section>
+        <div class="container">
+            <h2 class="title">Active Listings</h2>
+            <div class="catalog-item" >
+                {% for prod in product %}
+                <div class="catalog-item__wrapper" style="display: flex; justify-content: center; ">
+                    <div class="catalog-item__content" >
+
+                        <img src="{{prod.image.url}}" class="catalog-item__img" style="height: 350px; width: 350px;">
+                        <div class="catalog-item__subtitle" style="color: blue;">{{prod.title}}</div> 
+                        <div class="catalog-item__descr" style="width: 350px;">Decription: {{prod.description}}</div>
+                        {% if prod.last_bid is None%}
+                            <div class="catalog-item__bid">Price: {{prod.start_bid}}</div>
+                        {% else %}
+                            <div class="catalog-item__bid">Price: {{prod.last_bid}}</div>
+                        {% endif %}
+                        <div class="catalog-item__user">Seller: {{prod.user}}</div>
+                        
+                        <a href="{% url 'listingPage' product=prod.title %}">Details</a> <!-- product=prod.title - параметр, который мы передаем в метод listing_page -->
+                        
+                        
+                    </div>                 
+
+                </div> 
+                <hr>
+                {% endfor %}          
+
+            </div>
+        </div>
+        
+
+    </section>
+    
+
+    
+{% endblock %}
