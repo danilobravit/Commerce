@@ -18,7 +18,11 @@
                             <div class="catalog-item__bid">Price: {{prod.last_bid}}</div>
                         {% endif %}
                         <div class="catalog-item__user">Seller: {{prod.user}}</div>
-                        
+                        {% if prod.closed %}
+                            <div class="catalog-item__status">Status: <span style="color: brown;">Sold</span></div>
+                        {% else %}
+                            <div class="catalog-item__status">Status: <span style="color: green;">Active</span></div>
+                        {% endif %}
                         <a href="{% url 'listingPage' product=prod.title %}">Details</a> <!-- product=prod.title - параметр, который мы передаем в метод listing_page -->
                         
                         

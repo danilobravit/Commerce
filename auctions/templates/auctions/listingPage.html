@@ -1,42 +1,76 @@
 {% extends "auctions/layout.html" %}
 
 {% block title %}
-    
+    {{product.title}}
 {% endblock %}
 
 {% block body %}
-    {% if product not in watchlist.product.all %}
+    {% if product in watchlist.product.all %}
         <form action="{% url 'add_to_watchlist' product=product.title %}" method="POST">
             {% csrf_token %}        
-                <input type="submit" class="watchlist-button" name="watchlist-button" value="Add to watchlist">
+                <input type="submit" class="watchlist-button" name="watchlist-button" value="Remove from watchlist">
         </form>
     {% else %}
         <form action="{% url 'add_to_watchlist' product=product.title %}" method="POST">
             {% csrf_token %}        
-            <input type="submit" class="watchlist-button" name="watchlist-button" value="Remove from watchlist">
+            <input type="submit" class="watchlist-button" name="watchlist-button" value="Add to watchlist">
         </form>
     {% endif %}
     
     <img src="{{product.image.url}}" class="catalog-item__img" style="height: 350px; width: 350px;">
     <div class="catalog-item__subtitle" style="color: blue;">{{product.title}}</div> 
+    {% if request.user == product.user %}
+        <form action="{% url 'delete_product' product=product.title %}" mathod="GET">
+            <input type="submit" value="Delete product">
+        </form>
+    {% endif %}
     <div class="catalog-item__user">Seller: {{product.user}}</div>
     <div class="catalog-item__descr" style="width: 350px;">Decription: {{product.description}}</div>
     <div class="catalog-item__start-bid">Start Price: {{product.start_bid}}</div>
     
     {% if product.last_bid is None %}
-        <div class="catalog-item__bid">Last Bid: {{product.start_bid}}</div>
+        <div class="catalog-item__bid">Highest Bid: {{product.start_bid}}</div>
+        {% if product.user == request.user %}
+            <label style="color: red">You cannot sell this product! No one has offered a new bid.</label>
+        {% endif %}
+
     {% else %}
-        <div class="catalog-item__bid">Last Bid: {{product.last_bid}}</div>
+        <div class="catalog-item__bid">Highest Bid: {{product.last_bid}}</div>
     {% endif %}
     <br>
-    <form action="{% url 'set_new_bid' product=product.title %}" method="POST">
-        {% csrf_token %}
-        <input type="number" step="0.01" name="new-bid" required>
-        <input type="submit" value="Bid">
-    </form>
-    {% for message in messages %}
-    <p style="color: red;"> {{ message }}</p>   
-    {% endfor %}
+
+    {% if product.user == request.user %}
+        {% if not product.closed %}
+            <form action="{% url 'close_auction' product=product.title %}" method="GET">
+                {% csrf_token %}
+                {% if product.last_bid.bid > product.start_bid %}
+                    <input type="submit" name="close-auction" value="Sell!">                    
+                {% endif %}
+            </form>            
+        {% else %}
+            <label style="color:brown">Sold to {{product.last_bid.user}}</label>
+        {% endif %}
+    {% else %}
+        {% if not product.closed %}
+            <label class="sold_flag">Status: <span style="color: green;">Active</span> </label>
+            <form action="{% url 'set_new_bid' product=product.title %}" method="POST">
+                {% csrf_token %}
+                <input type="number" step="0.01" name="new-bid" required>
+                <input type="submit" value="Bid">
+            </form>
+            {% for message in messages %}
+            <p style="color: red;"> {{ message }}</p>   
+            {% endfor %}
+        {% else %}
+            {% if request.user == product.last_bid.user %}
+                <label style="color:brown"> Congratulation! This product is your!</label>
+            {% else %}
+                <label >Status: <span style="color:brown">Sold</span></label>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
+   
     <br>
     <div class="comments">
         <h5 class="comments_title">Your Comment</h5>

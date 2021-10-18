@@ -79,8 +79,7 @@ def create_listing(request):
         if form.is_valid():
             instance = form.save(commit=False) # Return an object without saving to the DB
             instance.user = request.user # Add an User field which will contain current user's id
-            instance.save() # Save the final "real form" to the DB       
-            messages.success(request, "Successfully Created")
+            instance.save() # Save the final "real form" to the DB      
         else:
             messages.error(request, "Error! Try again.")
         return HttpResponseRedirect("/")
@@ -90,9 +89,7 @@ def create_listing(request):
 
     return render(request, "auctions/createListing.html", {
         "form": form,
-        "products": products,
-        
-        
+        "products": products        
 
     })
 
@@ -140,7 +137,6 @@ def show_watchlist(request):
     try:
         watchlist = Watchlist.objects.get(user=request.user)
         num_of_prod = watchlist.product.count()
-
         return render(request, "auctions/watchlist.html", {
             "watchlist": watchlist,
             "num_of_prod": num_of_prod
@@ -182,6 +178,21 @@ def comment(request, product):
         new_comment.save()
     return redirect(request.META.get('HTTP_REFERER'))
 
+def close_auction(request, product):
+    if request.method == "GET":
+        product = Product.objects.get(title=product)
+        product.closed = True 
+        product.save()
+
+    return redirect(request.META.get('HTTP_REFERER'))
+
+def delete_product(request, product):
+    if request.method == "GET":
+        product = Product.objects.get(title=product)
+        product.delete()
+        
+    return HttpResponseRedirect("/")
 
         
+
 
