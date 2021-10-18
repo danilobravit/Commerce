@@ -77,14 +77,9 @@ def create_listing(request):
         form = CreateListingForm(request.POST, request.FILES) #create an instance of the form from "forms.py" file, CreateListing - class name in forms.py
         
         if form.is_valid():
-            instance = form.save(commit=False)
-            instance.user = request.user
-            instance.save()
-            
-            
-             # Return an object without saving to the DB
-             # Add an User field which will contain current user's id
-             # Save the final "real form" to the DB
+            instance = form.save(commit=False) # Return an object without saving to the DB
+            instance.user = request.user # Add an User field which will contain current user's id
+            instance.save() # Save the final "real form" to the DB       
             messages.success(request, "Successfully Created")
         else:
             messages.error(request, "Error! Try again.")
