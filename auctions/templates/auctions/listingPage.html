@@ -23,7 +23,7 @@
         <form action="{% url 'delete_product' product=product.title %}" mathod="GET">
             <input type="submit" value="Delete product">
         </form>
-    {% endif %}
+    {% endif %} 
     <div class="catalog-item__user">Seller: {{product.user}}</div>
     <div class="catalog-item__descr" style="width: 350px;">Decription: {{product.description}}</div>
     <div class="catalog-item__start-bid">Start Price: {{product.start_bid}}</div>

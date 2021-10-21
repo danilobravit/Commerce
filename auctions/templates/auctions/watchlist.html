@@ -1,14 +1,49 @@
 {% extends "auctions/layout.html" %}
 
-{% block body %}
-    <h2>Your watchlist ({{user.username}})</h2>
-    {% if watchlist.product.all %}
-        <ul>
-            {% for prod in watchlist.product.all %}
-                <li><a href="{% url 'listingPage' product=prod.title %}">{{prod.title}}</a></li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Empty watchlist</p>
-    {% endif %}
+
+
+{% block body %} 
+    <section>
+        <div class="container">
+            <h2 class="title">Your watchlist ({{user.username}}) : {{num_of_prod}}</h2>
+            <div class="catalog-item" style="display: flex;  flex-wrap: wrap-reverse; justify-content: space-between; ">
+            {% if watchlist.product.all %}
+                {% for prod in watchlist.product.all %}
+                <div class="catalog-item__wrapper" >
+                    <div class="catalog-item__content" >
+
+                        <img src="{{prod.image.url}}" class="catalog-item__img" style="height: 350px; width: 350px;">
+                        <div class="catalog-item__subtitle" style="color: blue;">{{prod.title}}</div> 
+                        <div class="catalog-item__descr" style="width: 350px;">Decription: {{prod.description}}</div>
+                        {% if prod.last_bid is None%}
+                            <div class="catalog-item__bid">Price: {{prod.start_bid}}</div>
+                        {% else %}
+                            <div class="catalog-item__bid">Price: {{prod.last_bid}}</div>
+                        {% endif %}
+                        <div class="catalog-item__user">Seller: {{prod.user}}</div>
+                        {% if prod.closed %}
+                            <div class="catalog-item__status">Status: <span style="color: brown;">Sold</span></div>
+                        {% else %}
+                            <div class="catalog-item__status">Status: <span style="color: green;">Active</span></div>
+                        {% endif %}
+                        <a href="{% url 'listingPage' product=prod.title %}">Details</a> <!-- product=prod.title - параметр, который мы передаем в метод listing_page -->
+                        
+                        
+                    </div>                 
+
+                </div> 
+                <hr>
+                {% endfor %}  
+            {% else %}
+                <div>Your watchlist is empty</div>
+            {% endif %}        
+
+            </div>
+        </div>
+        
+
+    </section>
+    
+
+    
 {% endblock %}

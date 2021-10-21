@@ -4,9 +4,9 @@
     <section>
         <div class="container">
             <h2 class="title">Active Listings</h2>
-            <div class="catalog-item" >
+            <div class="catalog-item" style="display: flex; flex-direction: row-reverse;  flex-wrap: wrap-reverse; justify-content: space-between; ">
                 {% for prod in product %}
-                <div class="catalog-item__wrapper" style="display: flex; justify-content: center; ">
+                <div class="catalog-item__wrapper" >
                     <div class="catalog-item__content" >
 
                         <img src="{{prod.image.url}}" class="catalog-item__img" style="height: 350px; width: 350px;">

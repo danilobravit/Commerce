@@ -25,7 +25,15 @@
                     <a class="nav-link" href="{% url 'createListing' %}">Create Listing</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a> {{watchlist.product.count}}
+                    <a class="nav-link" href="{% url 'myListings' %}">My listings</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'watchlist' %}">Watchlist <span style="color: black">{{watchlist.product.count}}</span></a>
+                    
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'categories' %}">Category</a> 
                     
                 </li>
                 <li class="nav-item">

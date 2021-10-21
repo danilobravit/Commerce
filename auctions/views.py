@@ -14,10 +14,21 @@ from datetime import datetime
 
 def index(request):
     product = Product.objects.all()
-    user = request.user
-    return render(request, "auctions/index.html", {
+    if request.user.is_authenticated:  
+        try: 
+            watchlist = Watchlist.objects.get(user=request.user)        
+            return render(request, "auctions/index.html", {
+                "watchlist": watchlist,
+                "product": product
+            })
+        except ObjectDoesNotExist:
+            return render(request, "auctions/index.html", { 
+            "product": product
+            }) 
+    return render(request, "auctions/index.html", { 
         "product": product
     })
+    
 
 
 
@@ -73,38 +84,73 @@ def register(request):
         return render(request, "auctions/register.html")
 
 def create_listing(request):
-    if request.method == "POST":
-        form = CreateListingForm(request.POST, request.FILES) #create an instance of the form from "forms.py" file, CreateListing - class name in forms.py
-        
-        if form.is_valid():
-            instance = form.save(commit=False) # Return an object without saving to the DB
-            instance.user = request.user # Add an User field which will contain current user's id
-            instance.save() # Save the final "real form" to the DB      
-        else:
-            messages.error(request, "Error! Try again.")
-        return HttpResponseRedirect("/")
+    try:
+        if request.method == "POST":
+            form = CreateListingForm(request.POST, request.FILES) #create an instance of the form from "forms.py" file, CreateListing - class name in forms.py
+            if form.is_valid():
+                instance = form.save(commit=False) # Return an object without saving to the DB
+                instance.user = request.user # Add an User field which will contain current user's id
+                instance.save() # Save the final "real form" to the DB      
+            else:
+                messages.error(request, "Error! Try again.")
+            return HttpResponseRedirect("/")
 
-    form = CreateListingForm()
-    products = Product.objects.all() 
+        form = CreateListingForm()
+        products = Product.objects.all() 
+        watchlist = Watchlist.objects.get(user=request.user) 
 
-    return render(request, "auctions/createListing.html", {
+        return render(request, "auctions/createListing.html", {
+            "form": form,
+            "products": products,
+            "watchlist": watchlist        
+        })
+    except ObjectDoesNotExist:
+        return render(request, "auctions/createListing.html", { 
         "form": form,
-        "products": products        
-
-    })
+        "products": products,
+        })
 
 def categories(request):
-    pass
+        
+    categories = Category.objects.all()
+    try:
+        watchlist = Watchlist.objects.get(user=request.user)     
+
+        return render(request, "auctions/categories.html", {
+            "watchlist": watchlist,
+            "categories": categories
+        })
+    except ObjectDoesNotExist:
+        return render(request, "auctions/categories.html", {
+            "categories": categories
+        })
+    
+
+def category_view(request, category):
+    category = Category.objects.get(name=category)
+    product = Product.objects.filter(category=category).all()
+    try:
+        watchlist = Watchlist.objects.get(user=request.user)     
+
+        return render(request, "auctions/categoryView.html", {
+            "watchlist": watchlist,
+            "category": category,
+            "product": product
+        })
+    except ObjectDoesNotExist:
+        return render(request, "auctions/categoryView.html", {
+            "category": category,
+            "product": product
+        })
+
 
 @login_required(login_url="/login")
 def listing_page(request, product):
     if request.method == "GET":
         try:
             product = Product.objects.get(title=product)
-            watchlist = Watchlist.objects.get(user=request.user)
+            watchlist = Watchlist.objects.get(user=request.user)          
             
-            # TODO
-
             return render(request, "auctions/listingPage.html", {            
                 "product": product,
                 "watchlist": watchlist
@@ -165,7 +211,7 @@ def set_new_bid(request, product):
         else:
             messages.error(request, "Your bid should be greater then current bid!")        
 
-        return redirect(request.META.get('HTTP_REFERER','redirect_if_referer_not_found')) # refresh page after form submitting
+        return redirect(request.META.get('HTTP_REFERER')) # refresh page after form submitting
         
 def comment(request, product):
     product = Product.objects.get(title=product)
@@ -193,6 +239,18 @@ def delete_product(request, product):
         
     return HttpResponseRedirect("/")
 
-        
+def my_listings(request):
+    product = Product.objects.filter(user=request.user).all()
+    try:
+        watchlist = Watchlist.objects.get(user=request.user)        
+        return render(request, "auctions/myListings.html", {
+            "product": product,
+            "watchlist": watchlist
+        })
+    except ObjectDoesNotExist:
+        return render(request, "auctions/myListings.html", {
+            "product": product
+        })
+
 
 
